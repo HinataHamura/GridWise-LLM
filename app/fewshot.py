@@ -144,6 +144,10 @@ def _warm_up_embeddings() -> None:
     global _corpus_embeddings, _hf_available
     if _corpus_embeddings is not None:
         return
+    if os.environ.get("VERCEL"):
+        _hf_available = False
+        logger.info("Using Jaccard fallback on Vercel")
+        return
     corpus_texts = [ex["note"] for ex in FEWSHOT_CORPUS]
     embs = _embed_hf(corpus_texts)
     if embs is not None and embs.shape[0] == len(corpus_texts):

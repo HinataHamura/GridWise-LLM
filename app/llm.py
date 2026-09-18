@@ -240,6 +240,11 @@ def call_llm_chain(
     Try each provider in order. Returns raw list[dict] from first successful provider.
     Raises RuntimeError if all providers fail.
     """
+    # Vercel requests must not wait on third-party model cold starts or network
+    # retries; the graph converts this into its deterministic safe fallback.
+    if os.environ.get("VERCEL"):
+        raise RuntimeError("External LLM calls disabled on Vercel")
+
     last_error: Optional[Exception] = None
 
     for name, fn in PROVIDERS:
