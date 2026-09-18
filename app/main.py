@@ -53,6 +53,19 @@ app = FastAPI(
 )
 
 
+@app.middleware("http")
+async def normalize_vercel_path(request: Request, call_next):
+    path = request.scope["path"]
+    for prefix in ("/api/index.py", "/api"):
+        if path == prefix:
+            request.scope["path"] = "/"
+            break
+        if path.startswith(prefix + "/"):
+            request.scope["path"] = path[len(prefix):]
+            break
+    return await call_next(request)
+
+
 # ─── Global exception handler ─────────────────────────────────────────────────
 
 @app.exception_handler(Exception)
