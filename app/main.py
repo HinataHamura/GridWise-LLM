@@ -71,6 +71,17 @@ async def health():
     return {"status": "ok"}
 
 
+@app.get("/")
+async def root():
+    return {
+        "service": "GridWise LLM API",
+        "status": "ok",
+        "health": "/health",
+        "docs": "/docs",
+        "optimize": "/optimize-energy",
+    }
+
+
 @app.post("/optimize-energy", response_model=OptimizeResponse)
 async def optimize_energy(request: OptimizeRequest):
     logger.info("Received request for scenario_id=%s", request.scenario_id)
