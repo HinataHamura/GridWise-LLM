@@ -94,7 +94,7 @@ def _interpret_gemini(system_prompt: str, user_message: str, num_notes: int) -> 
         system_instruction=system_prompt,
     )
 
-    response = model.generate_content(user_message)
+    response = model.generate_content(user_message, request_options={"timeout": 15})
     text = response.text.strip()
     parsed = _extract_json_array(text)
     if parsed is None:
@@ -112,7 +112,7 @@ def _interpret_groq(system_prompt: str, user_message: str, num_notes: int) -> Li
     if not api_key:
         raise ValueError("GROQ_API_KEY not set")
 
-    client = Groq(api_key=api_key)
+    client = Groq(api_key=api_key, timeout=15.0)
 
     for model_id in ("llama-3.3-70b-versatile", "llama-3.1-8b-instant"):
         try:
@@ -192,7 +192,7 @@ def _interpret_hf(system_prompt: str, user_message: str, num_notes: int) -> List
                     },
                     "options": {"wait_for_model": True},
                 },
-                timeout=60,
+                timeout=10,
             )
             if resp.status_code == 429:
                 logger.warning("HF rate limit for %s", model_id)

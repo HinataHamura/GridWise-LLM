@@ -113,7 +113,7 @@ def node_guardrail_validate(state: InterpretState) -> Dict[str, Any]:
     if raw is None:
         return {
             "validation_errors": ["LLM returned no output"],
-            "retry_count": state["retry_count"] + 1,
+            "retry_count": MAX_RETRIES,
         }
 
     is_valid, errors = deterministic_guardrail_validate(raw, num_notes)
